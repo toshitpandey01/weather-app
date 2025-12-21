@@ -1,44 +1,292 @@
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(to right, #74ebd5, #ACB6E5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+/* Base layout and background */
+.app-body{
+  margin:0;
+  min-height:100vh;
+  font-family:'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background:radial-gradient(circle at top, #0b1120 0%, #020617 55%, #000000 100%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  overflow:hidden;
 }
 
-.container {
-    text-align: center;
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    width: 300px;
+.layout{
+  display:flex;
+  gap:32px;
+  align-items:flex-start;
 }
 
-input {
-    padding: 10px;
-    width: 80%;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+/* Main phone frame */
+.phone-frame{
+  width:320px;
+  border-radius:32px;
+  overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.85);
+  background:linear-gradient(180deg,#020617 0%, #020617 100%);
+  color:#f9fafb;
+  position:relative;
 }
 
-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    border: none;
-    background-color: #5c6bc0;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
+/* Top header (no big blank sky now) */
+.sky-header{
+  padding:24px 22px 16px;
+  background:linear-gradient(180deg,#020617 0%, #020617 100%);
+  position:relative;
 }
 
-button:hover {
-    background-color: #3949ab;
+/* Remove hero-clouds blank space completely */
+.hero-clouds{ display:none; }
+
+/* City + condition */
+.city-row{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
 
-#result {
-    margin-top: 20px;
-    font-size: 18px;
+#cityNameDisplay{
+  font-size:1.4rem;
+  font-weight:700;
+}
+
+.condition{
+  font-size:0.9rem;
+  opacity:0.85;
+}
+
+/* Temp line */
+.temp-row{
+  margin-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.temp-main{
+  font-size:2.4rem;
+  font-weight:700;
+}
+
+.temp-range{
+  font-size:0.8rem;
+  opacity:0.8;
+}
+
+/* Bottom content panel */
+.content-panel{
+  padding:18px 18px 22px;
+  background:#020617;
+}
+
+/* Search bar */
+.search-bar{
+  display:flex;
+  gap:8px;
+  margin-bottom:16px;
+}
+
+.search-bar input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,0.6);
+  background:rgba(15,23,42,0.9);
+  color:#e5e7eb;
+  font-size:0.9rem;
+  outline:none;
+}
+
+.search-bar input::placeholder{
+  color:#64748b;
+}
+
+.search-bar button{
+  width:52px;
+  border-radius:999px;
+  border:none;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;
+  font-weight:600;
+  font-size:0.9rem;
+  cursor:pointer;
+  transition:transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.search-bar button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 14px rgba(79,70,229,0.7);
+}
+
+/* Current conditions card */
+.now-card{
+  margin-top:6px;
+  padding:14px 14px 12px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#1d4ed8,#020617);
+  border:1px solid rgba(148,163,184,0.4);
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.now-left .label{
+  margin:0;
+  font-size:0.8rem;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  opacity:0.85;
+}
+
+.big-temp{
+  margin:4px 0 0;
+  font-size:2.1rem;
+  font-weight:700;
+}
+
+.small-text{
+  margin:2px 0 0;
+  font-size:0.85rem;
+  opacity:0.9;
+}
+
+.now-right{
+  font-size:0.78rem;
+  text-align:right;
+}
+
+.now-right p{
+  margin:2px 0;
+  opacity:0.9;
+}
+
+/* AQI card */
+.aqi-card{
+  margin-top:10px;
+  padding:14px 14px 12px;
+  border-radius:18px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(148,163,184,0.4);
+}
+
+.aqi-header{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+
+.aqi-label{
+  font-size:0.8rem;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  opacity:0.85;
+}
+
+.aqi-index{
+  font-size:1.3rem;
+  font-weight:700;
+}
+
+.aqi-details{
+  text-align:left;
+  font-size:0.8rem;
+}
+
+.aqi-level{
+  display:inline-block;
+  margin-bottom:4px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:0.75rem;
+  font-weight:600;
+}
+
+.aqi-level.good{ background:rgba(34,197,94,0.2); color:#22c55e; }
+.aqi-level.fair{ background:rgba(250,204,21,0.2); color:#eab308; }
+.aqi-level.moderate{ background:rgba(249,115,22,0.2); color:#f97316; }
+.aqi-level.poor{ background:rgba(239,68,68,0.2); color:#ef4444; }
+.aqi-level.very-poor{ background:rgba(185,28,28,0.2); color:#b91c1c; }
+.aqi-level.hazardous{ background:rgba(168,85,247,0.2); color:#a855f7; }
+
+.aqi-advice{
+  font-size:0.75rem;
+  opacity:0.9;
+}
+
+/* Optional mini-grid placeholder */
+.mini-grid{
+  margin-top:14px;
+  display:flex;
+  gap:8px;
+}
+
+/* debug JSON */
+.raw-result{
+  margin-top:12px;
+  font-size:0.7rem;
+  color:#9ca3af;
+  max-height:120px;
+  overflow:auto;
+  background:rgba(15,23,42,0.9);
+  padding:8px;
+  border-radius:10px;
+}
+
+/* Right-side 5‑day forecast */
+.forecast-panel{
+  width:220px;
+  padding:16px 18px;
+  border-radius:20px;
+  background:rgba(15,23,42,0.95);
+  box-shadow:0 18px 45px rgba(0,0,0,0.6);
+  color:#e5e7eb;
+}
+
+.forecast-panel h2{
+  margin:0 0 10px;
+  font-size:1rem;
+}
+
+/* Forecast day pill */
+.forecast-day{
+  padding:10px 12px;
+  border-radius:18px;
+  background:rgba(15,23,42,0.95);
+  border:1px solid rgba(51,65,85,0.95);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:0.78rem;
+  margin-bottom:8px;
+}
+
+.forecast-day .day{
+  font-weight:600;
+}
+
+.forecast-day .temp{
+  font-weight:700;
+  font-size:0.9rem;
+}
+
+.forecast-day .desc{
+  font-size:0.7rem;
+  opacity:0.85;
+}
+
+/* Responsive */
+@media (max-width:900px){
+  .layout{
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  .phone-frame{
+    width:90vw;
+  }
+
+  .forecast-panel{
+    width:90vw;
+  }
 }

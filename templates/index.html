@@ -1,17 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Weather App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="container">
-        <h1>🌤 Weather App</h1>
-        <input type="text" id="cityInput" placeholder="Enter city name">
-        <button onclick="getWeather()">Get Weather</button>
-        <div id="result"></div>
+<body class="app-body">
+  <div class="layout">
+
+    <!-- Phone-style card -->
+    <div class="phone-frame">
+
+      <!-- Top sky area -->
+      <div class="sky-header">
+        <div class="city-row">
+          <span id="cityNameDisplay">—</span>
+          <span class="condition" id="conditionText">Search a city</span>
+        </div>
+
+        <div class="temp-row">
+          <span class="temp-main" id="tempMain">--°</span>
+          <span class="temp-range" id="tempRange">H:--° · L:--°</span>
+        </div>
+
+        <!-- Big cloud + rain band -->
+        <div class="hero-clouds">
+          <div class="cloud-layer"></div>
+          <div class="rain-layer"></div>
+        </div>
+      </div>
+
+      <!-- Bottom content panel -->
+      <div class="content-panel">
+        <form class="search-bar" onsubmit="event.preventDefault(); getWeather();">
+          <input
+            type="text"
+            id="cityInput"
+            placeholder="Enter city name"
+            autocomplete="off">
+          <button type="submit">Go</button>
+        </form>
+
+        <!-- Current weather card -->
+        <section class="now-card" id="nowCard">
+          <div class="now-left">
+            <p class="label">Now</p>
+            <p class="big-temp" id="nowTemp">--°</p>
+            <p class="small-text" id="nowDesc">Waiting for data…</p>
+          </div>
+          <div class="now-right">
+            <p>Feels like <span id="feelsLike">--°</span></p>
+            <p>Humidity <span id="humidity">--%</span></p>
+            <p>Wind <span id="wind">-- km/h</span></p>
+          </div>
+        </section>
+
+        <!-- AQI card -->
+        <section class="aqi-card">
+          <div class="aqi-header">
+            <span class="aqi-label">Air Quality Index</span>
+            <span class="aqi-index" id="aqiValue">--</span>
+          </div>
+          <div class="aqi-details">
+            <div class="aqi-level" id="aqiLevel">--</div>
+            <div class="aqi-advice" id="aqiAdvice">Enter a city to check AQI.</div>
+          </div>
+        </section>
+
+        <section class="mini-grid" id="hourlyStrip"></section>
+
+        <pre id="result" class="raw-result" hidden></pre>
+      </div>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- Right: 5‑day forecast -->
+    <aside class="forecast-panel">
+      <h2>Next 5 Days</h2>
+      <div id="forecastList"></div>
+    </aside>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
