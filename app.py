@@ -3,7 +3,7 @@ import requests
 import os
 
 app = Flask(__name__)
-API_KEY = "27df5b29bee067875f61544bf73b9911"
+API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 
 @app.route('/')
@@ -13,22 +13,23 @@ def index():
 
 @app.route('/weather', methods=['POST'])
 def get_weather():
+    if not API_KEY:
+        return jsonify({'error': 'Server API key not configured'}), 500
+
     try:
         city = request.json.get('city', '').strip()
         if not city:
             return jsonify({'error': 'City name required'}), 400
 
-        # Get coordinates
         geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
         geo_response = requests.get(geo_url, timeout=5).json()
 
         if not geo_response:
-            return jsonify({'error': f'City "{city}" not found'}), 404
+            return jsonify({'error': f'City \"{city}\" not found'}), 404
 
         lat, lon = geo_response[0]['lat'], geo_response[0]['lon']
         city_name = geo_response[0].get('name', city)
 
-        # Current weather
         weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
         weather_data = requests.get(weather_url, timeout=5).json()
 
@@ -36,20 +37,17 @@ def get_weather():
         weather = weather_data['weather'][0]
         wind = weather_data['wind']
 
-        # AQI
         aqi_url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
         try:
             aqi_data = requests.get(aqi_url, timeout=5).json()
             aqi = aqi_data['list'][0]['main']['aqi']
-        except:
+        except Exception:
             aqi = None
 
-        # 5-day forecast
         forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
         forecast_data = requests.get(forecast_url, timeout=5).json()
         forecast_list = []
-
-        for item in forecast_data['list'][:40:8]:  # Every 24h for 5 days
+        for item in forecast_data['list'][:40:8]:
             forecast_list.append({
                 'date': item['dt_txt'][:10],
                 'description': item['weather'][0]['description'],
@@ -78,5 +76,4 @@ def get_weather():
 
 
 if __name__ == '__main__':
-    print("🌤️ Professional Weather App Starting...")
     app.run(debug=True, port=5000)
