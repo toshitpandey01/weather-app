@@ -1,60 +1,62 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 app = Flask(__name__)
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
 @app.route('/weather', methods=['POST'])
 def get_weather():
     if not API_KEY:
         return jsonify({'error': 'Server API key not configured'}), 500
-
     try:
         city = request.json.get('city', '').strip()
         if not city:
             return jsonify({'error': 'City name required'}), 400
-
-        geo_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
+        geo_url = (
+            f"https://api.openweathermap.org/geo/1.0/direct"
+            f"?q={city}&limit=1&appid={API_KEY}"
+        )
         geo_response = requests.get(geo_url, timeout=5).json()
-
         if not geo_response:
-            return jsonify({'error': f'City \"{city}\" not found'}), 404
-
-        lat, lon = geo_response[0]['lat'], geo_response[0]['lon']
+            return jsonify({'error': f'City "{city}" not found'}), 404
+        lat = geo_response[0]['lat']
+        lon = geo_response[0]['lon']
         city_name = geo_response[0].get('name', city)
-
-        weather_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+        weather_url = (
+            f"https://api.openweathermap.org/data/2.5/weather"
+            f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+        )
         weather_data = requests.get(weather_url, timeout=5).json()
-
         main = weather_data['main']
         weather = weather_data['weather'][0]
-        wind = weather_data['wind']
-
-        aqi_url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API_KEY}"
+        wind = weather_data.get('wind', {})
+        aqi = None
+        aqi_url = (
+            f"https://api.openweathermap.org/data/2.5/air_pollution"
+            f"?lat={lat}&lon={lon}&appid={API_KEY}"
+        )
         try:
             aqi_data = requests.get(aqi_url, timeout=5).json()
             aqi = aqi_data['list'][0]['main']['aqi']
         except Exception:
-            aqi = None
-
-        forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+            pass
+        forecast_url = (
+            f"https://api.openweathermap.org/data/2.5/forecast"
+            f"?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+        )
         forecast_data = requests.get(forecast_url, timeout=5).json()
         forecast_list = []
-        for item in forecast_data['list'][:40:8]:
+        for item in forecast_data.get('list', [])[:40:8]:
             forecast_list.append({
                 'date': item['dt_txt'][:10],
                 'description': item['weather'][0]['description'],
                 'temp': round(item['main']['temp']),
                 'icon': item['weather'][0]['icon']
             })
-
         return jsonify({
             'city': city_name,
             'description': weather['description'],
@@ -70,10 +72,7 @@ def get_weather():
             'aqi': aqi,
             'forecast': forecast_list
         })
-
     except Exception as e:
         return jsonify({'error': f'Weather service error: {str(e)}'}), 500
-
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(port=5000)
