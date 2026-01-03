@@ -74,5 +74,5 @@ def get_weather():
         })
     except Exception as e:
         return jsonify({'error': f'Weather service error: {str(e)}'}), 500
-if __name__ == '__main__':
-    app.run(port=5000)
+app = Flask(__name__)
+
